@@ -1,0 +1,85 @@
+<Window x:Class="QTECGolfEditor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="QTEC 골프 영상 편집기" Height="800" Width="1220"
+        MinHeight="700" MinWidth="1040" Background="#101820"
+        FontFamily="Malgun Gothic" WindowStartupLocation="CenterScreen">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="70"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="44"/>
+    </Grid.RowDefinitions>
+
+    <Border Grid.Row="0" Background="#15222D" Padding="22,12">
+      <DockPanel>
+        <TextBlock Text="QTEC 골프 영상 편집기" FontSize="24" FontWeight="Bold" VerticalAlignment="Center"/>
+        <Button DockPanel.Dock="Right" Width="170" Background="#1F9D73" Foreground="White"
+                Content="① 영상 불러오기" Click="OpenVideo_Click"/>
+      </DockPanel>
+    </Border>
+
+    <Grid Grid.Row="1" Margin="18">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="350"/>
+      </Grid.ColumnDefinitions>
+
+      <Border Grid.Column="0" Background="Black" CornerRadius="8" Margin="0,0,16,0">
+        <Grid>
+          <MediaElement x:Name="Player" LoadedBehavior="Manual" UnloadedBehavior="Manual"
+                        Stretch="Uniform" MediaOpened="Player_MediaOpened"/>
+          <Border VerticalAlignment="Bottom" Background="#B0000000" Padding="12">
+            <StackPanel>
+              <Slider x:Name="Timeline" Minimum="0" ValueChanged="Timeline_ValueChanged"/>
+              <DockPanel Margin="0,7,0,0">
+                <Button x:Name="PlayButton" Width="100" Content="▶ 재생" Click="Play_Click"/>
+                <TextBlock x:Name="TimeText" Text="00:00 / 00:00" Margin="15,0"
+                           VerticalAlignment="Center" FontSize="14"/>
+              </DockPanel>
+            </StackPanel>
+          </Border>
+        </Grid>
+      </Border>
+
+      <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+        <StackPanel Background="#172733" Margin="0" Padding="20">
+          <TextBlock Text="볼 궤적" FontSize="18" FontWeight="Bold" Margin="0,0,0,8"/>
+          <Button Content="타격 순간 자동 찾기" Background="#F2B134" Foreground="#151515"
+                  Click="DetectImpact_Click"/>
+          <TextBlock x:Name="ImpactText" Text="타격 시점: -" Margin="0,8,0,4"/>
+          <Slider x:Name="ImpactSlider" Minimum="0" Maximum="1" ValueChanged="ImpactSlider_ValueChanged"/>
+          <CheckBox x:Name="TrailCheck" Content="볼 궤적 표시" IsChecked="True"
+                    Foreground="White" FontSize="14" Margin="0,8"/>
+          <ComboBox x:Name="TrailColor" SelectedIndex="0" Margin="0,4,0,10">
+            <ComboBoxItem Content="노란색"/>
+            <ComboBoxItem Content="빨간색"/>
+            <ComboBoxItem Content="흰색"/>
+            <ComboBoxItem Content="파란색"/>
+          </ComboBox>
+
+          <Separator Margin="0,8"/>
+          <TextBlock Text="자막" FontSize="18" FontWeight="Bold" Margin="0,8"/>
+          <TextBox x:Name="SubtitleText" Text="나이스 샷!" FontSize="15" Padding="8"/>
+
+          <Separator Margin="0,14,0,8"/>
+          <TextBlock Text="배경음악" FontSize="18" FontWeight="Bold" Margin="0,5"/>
+          <TextBlock x:Name="MusicText" Text="선택 안 함" Foreground="#B9C7D3" TextWrapping="Wrap"/>
+          <Button Content="음악 파일 선택" Click="ChooseMusic_Click"/>
+
+          <Separator Margin="0,14,0,8"/>
+          <TextBlock Text="완성 영상" FontSize="18" FontWeight="Bold" Margin="0,5"/>
+          <Button x:Name="ExportButton" Content="② MP4로 저장" Background="#E05A47"
+                  Foreground="White" Click="Export_Click"/>
+          <ProgressBar x:Name="Progress" Height="14" Minimum="0" Maximum="100" Margin="0,8"/>
+          <TextBlock Text="※ 자동 궤적은 타구 방향 추정선입니다. 타격 시점은 슬라이더로 조정할 수 있습니다."
+                     Foreground="#AFC0CE" TextWrapping="Wrap" FontSize="12" Margin="0,8"/>
+        </StackPanel>
+      </ScrollViewer>
+    </Grid>
+
+    <Border Grid.Row="2" Background="#0B1218" Padding="18,10">
+      <TextBlock x:Name="StatusText" Text="영상을 불러와 주세요."/>
+    </Border>
+  </Grid>
+</Window>
