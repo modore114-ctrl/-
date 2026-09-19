@@ -1,0 +1,54 @@
+name: Build Windows EXE
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - "src/**"
+      - "installer/**"
+      - ".github/workflows/build-windows.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Install FFmpeg and Inno Setup
+        shell: pwsh
+        run: |
+          choco install ffmpeg -y --no-progress
+          choco install innosetup -y --no-progress
+
+      - name: Publish single-file Windows application
+        shell: pwsh
+        run: |
+          dotnet publish src/QTECGolfEditor/QTECGolfEditor.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:DebugType=None -o publish
+          New-Item -ItemType Directory -Force publish/tools | Out-Null
+          $ffmpeg = (Get-Command ffmpeg.exe).Source
+          Copy-Item $ffmpeg publish/tools/ffmpeg.exe
+
+      - name: Build Korean installer
+        shell: pwsh
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "installer\QTEC_GolfVideoEditor.iss"
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: QTEC-GolfVideoEditor-Windows
+          path: release/QTEC_GolfVideoEditor_Setup.exe
+          if-no-files-found: error
+          retention-days: 30
