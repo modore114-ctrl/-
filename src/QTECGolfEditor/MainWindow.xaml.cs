@@ -315,6 +315,8 @@ public partial class MainWindow : Window
         return sb.ToString();
     }
 
+    private sealed record ExportSettings(double ImpactSeconds, int ColorIndex, bool ShowTrail, string Subtitle, double DurationSeconds, string? MusicPath);
+
     private static string AssTime(double seconds)
     {
         var t = TimeSpan.FromSeconds(Math.Max(0, seconds));
