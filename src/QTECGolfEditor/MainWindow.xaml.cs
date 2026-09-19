@@ -269,11 +269,11 @@ public partial class MainWindow : Window
         }
     }
 
-    private string BuildAss()
+    private string BuildAss(ExportSettings settings)
     {
-        double start = ImpactSlider.Value;
-        double end = Math.Min(start + 4.2, _duration.TotalSeconds);
-        string color = TrailColor.SelectedIndex switch
+        double start = settings.ImpactSeconds;
+        double end = Math.Min(start + 4.2, settings.DurationSeconds);
+        string color = settings.ColorIndex switch
         {
             1 => "&H002828F5&",
             2 => "&H00FFFFFF&",
