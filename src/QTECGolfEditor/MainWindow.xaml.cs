@@ -103,7 +103,7 @@ public partial class MainWindow : Window
 
     private void UpdateTimeText()
     {
-        TimeText.Text = $"{Player.Position:mm\:ss} / {_duration:mm\:ss}";
+        TimeText.Text = $"{Player.Position:mm\\:ss} / {_duration:mm\\:ss}";
     }
 
     private async void DetectImpact_Click(object sender, RoutedEventArgs e)
