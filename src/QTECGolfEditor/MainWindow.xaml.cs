@@ -207,7 +207,8 @@ public partial class MainWindow : Window
 
         try
         {
-            var settings = new ExportSettings(ImpactSlider.Value, TrailColor.SelectedIndex, TrailCheck.IsChecked == true, SubtitleText.Text, _duration.TotalSeconds, _musicPath);\n            await Task.Run(() => ExportVideo(dialog.FileName, settings));
+            var settings = new ExportSettings(ImpactSlider.Value, TrailColor.SelectedIndex, TrailCheck.IsChecked == true, SubtitleText.Text, _duration.TotalSeconds, _musicPath);
+            await Task.Run(() => ExportVideo(dialog.FileName, settings));
             StatusText.Text = $"완료: {dialog.FileName}";
             MessageBox.Show("영상 저장이 완료되었습니다.", "QTEC 골프 영상 편집기");
         }
@@ -234,14 +235,14 @@ public partial class MainWindow : Window
             string filterPath = assPath.Replace("\\", "/").Replace(":", "\\:").Replace("'", "\\'");
             var args = new List<string> { "-y", "-i", _videoPath! };
 
-            if (_musicPath != null)
+            if (settings.MusicPath != null)
             {
-                args.AddRange(new[] { "-stream_loop", "-1", "-i", _musicPath });
+                args.AddRange(new[] { "-stream_loop", "-1", "-i", settings.MusicPath });
             }
 
             args.AddRange(new[] { "-vf", $"ass='{filterPath}'" });
 
-            if (_musicPath != null)
+            if (settings.MusicPath != null)
             {
                 args.AddRange(new[]
                 {
