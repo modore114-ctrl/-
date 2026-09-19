@@ -207,7 +207,7 @@ public partial class MainWindow : Window
 
         try
         {
-            await Task.Run(() => ExportVideo(dialog.FileName));
+            var settings = new ExportSettings(ImpactSlider.Value, TrailColor.SelectedIndex, TrailCheck.IsChecked == true, SubtitleText.Text, _duration.TotalSeconds, _musicPath);\n            await Task.Run(() => ExportVideo(dialog.FileName, settings));
             StatusText.Text = $"완료: {dialog.FileName}";
             MessageBox.Show("영상 저장이 완료되었습니다.", "QTEC 골프 영상 편집기");
         }
@@ -223,14 +223,14 @@ public partial class MainWindow : Window
         }
     }
 
-    private void ExportVideo(string output)
+    private void ExportVideo(string output, ExportSettings settings)
     {
         string tempDir = Path.Combine(Path.GetTempPath(), "QTEC_" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(tempDir);
         string assPath = Path.Combine(tempDir, "overlay.ass");
         try
         {
-            File.WriteAllText(assPath, BuildAss(), new UTF8Encoding(true));
+            File.WriteAllText(assPath, BuildAss(settings), new UTF8Encoding(true));
             string filterPath = assPath.Replace("\\", "/").Replace(":", "\\:").Replace("'", "\\'");
             var args = new List<string> { "-y", "-i", _videoPath! };
 
@@ -290,7 +290,7 @@ public partial class MainWindow : Window
                       "m 995 316 b 995 310 1000 305 1006 305 b 1012 305 1017 310 1017 316 b 1017 322 1012 327 1006 327 b 1000 327 995 322 995 316 " +
                       "m 1007 279 b 1007 273 1012 268 1018 268 b 1024 268 1029 273 1029 279 b 1029 285 1024 290 1018 290 b 1012 290 1007 285 1007 279";
 
-        string safeSubtitle = SubtitleText.Text.Replace("\\", "／").Replace("{", "（").Replace("}", "）").Replace("\n", "\\N");
+        string safeSubtitle = settings.Subtitle.Replace("\\", "／").Replace("{", "（").Replace("}", "）").Replace("\n", "\\N");
         var sb = new StringBuilder();
         sb.AppendLine("[Script Info]");
         sb.AppendLine("ScriptType: v4.00+");
@@ -303,7 +303,7 @@ public partial class MainWindow : Window
         sb.AppendLine("[Events]");
         sb.AppendLine("Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text");
 
-        if (TrailCheck.IsChecked == true)
+        if (settings.ShowTrail)
         {
             sb.AppendLine($"Dialogue: 0,{AssTime(start)},{AssTime(end)},Default,,0,0,0,,{{\\an7\\pos(0,0)\\p1\\bord4\\shad0\\c{color}\\fad(150,650)}}{dots}");
         }
